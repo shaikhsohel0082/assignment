@@ -1,0 +1,240 @@
+package practice;
+import java.util.Arrays;
+import java.util.Scanner;
+
+class ProductNotFound extends Exception {
+    
+}
+
+public class Product {
+    String[] PNAME = new String[10];
+    int[] PID = new int[10];
+    int[] price = new int[10];
+    int[] quantity = new int[10];
+    int[] discount = new int[10];
+    int nextindex = 0;
+
+    public void addproduct(String PNAME, int PID, int price, int quantity, int discount) {
+        this.PNAME[nextindex] = PNAME;
+        this.PID[nextindex] = PID;
+        this.price[nextindex] = price;
+        this.quantity[nextindex] = quantity;
+        this.discount[nextindex] = discount;
+        nextindex++;
+    }
+
+    public void displayproduct() {
+        for (int i = 0; i < nextindex; i++) {
+            if (PNAME[i] != null && (PID[i] != 0) && (price[i] != 0) && (quantity[i] != 0) && (discount[i] != 0)) {
+                System.out.println(
+                        PNAME[i] + " " + PID[i] + " " + price[i] + "RS " + quantity[i] + "units " + discount[i] + "% off");
+            }
+        }
+    }
+
+    public void deleteproductbyPID(int deletePID) throws ProductNotFound {
+        boolean productfound = false;
+        for (int i = 0; i < nextindex; i++) {
+            if (this.PID[i] == deletePID) {
+                this.PNAME[i] = null;
+                this.PID[i] = 0;
+                this.price[i] = 0;
+                this.quantity[i] = 0;
+                this.discount[i] = 0;
+                productfound = true;
+                break;
+            }
+        }
+
+        if (!productfound) {
+            throw new ProductNotFound();
+        }
+    }
+    
+    public void updateproductbyPID(int updatePID, String PNAME, int price, int quantity, int discount) {
+        for (int i = 0; i < nextindex; i++) {
+            if (this.PID[i] == updatePID) {
+                this.PNAME[i] = PNAME;
+                // this.PID[i] = updatePID; 
+                this.price[i] = price;
+                this.quantity[i] = quantity;
+                this.discount[i] = discount;
+                break;
+            }
+        }
+        displayproduct();
+    }
+    
+    public String[] searchproductbyPID(int searchPID) throws ProductNotFound {
+        int foundindex = -1; 
+        for (int i = 0; i < nextindex; i++) {
+            if (this.PID[i] == searchPID) {
+                foundindex = i;
+                break;
+            }
+        }
+
+        if (foundindex == -1) {
+            throw new ProductNotFound();
+        }
+
+        String[] productDetails = {
+            PNAME[foundindex],
+            String.valueOf(PID[foundindex]),
+            String.valueOf(price[foundindex]),
+            String.valueOf(quantity[foundindex]),
+            String.valueOf(discount[foundindex])
+        };
+
+        return productDetails;
+    }
+    
+    public String[] searchproductbyPNAME(String  PNAME) throws ProductNotFound {
+        int foundindex = -1; 
+        for (int i = 0; i < nextindex; i++) {
+            if (this.PNAME[i] != null && this.PNAME[i].equals(PNAME)) {
+                foundindex = i;
+                break;
+            }
+        }
+
+        if (foundindex == -1) {
+            throw new ProductNotFound();
+        }
+
+        String[] productDetails = {
+            String.valueOf(PID[foundindex]),
+            String.valueOf(price[foundindex]),
+            String.valueOf(quantity[foundindex]),
+            String.valueOf(discount[foundindex])
+        };
+
+        return productDetails;
+    }
+    
+    public void displayascendingorderbyprice() {
+        int[] indices = new int[nextindex];
+        for (int i = 0; i < nextindex; i++) {
+            indices[i] = i;
+        }
+        
+        for (int i = 0; i < nextindex - 1; i++) {
+            for (int j = 0; j < nextindex - i - 1; j++) {
+                if (price[indices[j]] > price[indices[j + 1]]) {
+                    int temp = indices[j];
+                    indices[j] = indices[j + 1];
+                    indices[j + 1] = temp;
+                }
+            }
+        }
+        
+        for (int i = 0; i < nextindex; i++) {
+            int index = indices[i];
+            System.out.println(
+                PNAME[index] + " " + PID[index] + " " + price[index] + " RS " + quantity[index] + " units " + discount[index] + "% off"
+            );
+        }
+    }
+    public void displayascendingorderbydiscount() {
+        int[] indices = new int[nextindex];
+        for (int i = 0; i < nextindex; i++) {
+            indices[i] = i;
+        }
+        
+        for (int i = 0; i < nextindex - 1; i++) {
+            for (int j = 0; j < nextindex - i - 1; j++) {
+                if (discount[indices[j]] > discount[indices[j + 1]]) {
+                    int temp = indices[j];
+                    indices[j] = indices[j + 1];
+                    indices[j + 1] = temp;
+                }
+            }
+        }
+        
+        for (int i = 0; i < nextindex; i++) {
+            int index = indices[i];
+            System.out.println(
+                PNAME[index] + " " + PID[index] + " " + price[index] + " RS " + quantity[index] + " units " + discount[index] + "% off"
+            );
+        }
+    }
+
+    public static void main(String[] args) {
+        Product p1 = new Product();
+       
+        Scanner s = new Scanner(System.in);
+        
+        while (true) {
+            System.out.print("How may I help you? Please select an option:\n"
+                    + "1) Add product\n"
+                    + "2) Display all products\n"
+                    + "3) Delete product by PID\n"
+                    + "4) Update product\n"
+                    + "5) Search product by PID\n"
+                    + "6) Search product by PNAME\n"
+                    + "7) Display all products by ascending order of price\n"
+                    + "8) Display all products by ascending order of discount\n"
+                    + "9) Exit\n");
+
+            int input = s.nextInt();
+            switch (input) {
+                case 1:
+                    System.out.println("Enter details of product (Name, Product ID, Price, Quantity, Discount):");
+                    p1.addproduct(s.next(), s.nextInt(), s.nextInt(), s.nextInt(), s.nextInt());
+                    p1.displayproduct();
+                    break;
+                case 2:
+                    p1.displayproduct();
+                    break;
+                case 3:
+                    try {
+                        System.out.println("Enter Product ID to delete:");
+                        p1.deleteproductbyPID(s.nextInt());
+                    } catch (ProductNotFound e) {
+                        System.out.println("Product not found.");
+                    }
+                    break;
+                case 4:
+                    System.out.println("Enter details to update (Product ID, Name, Price, Quantity, Discount):");
+                    p1.updateproductbyPID(s.nextInt(), s.next(), s.nextInt(), s.nextInt(), s.nextInt());
+                    break;
+                case 5:
+                    try {
+                        System.out.println("Enter Product ID to search:");
+                        String[] foundProduct = p1.searchproductbyPID(s.nextInt());
+                        for (String detail : foundProduct) {
+                            System.out.print(detail + " ");
+                        }
+                        System.out.println();
+                    } catch (ProductNotFound e) {
+                        System.out.println("Product not found.");
+                    }
+                    break;
+                case 6:
+                    try {
+                        System.out.println("Enter Product Name to search:");
+                        String[] foundProduct = p1.searchproductbyPNAME(s.next());
+                        for (String detail : foundProduct) {
+                            System.out.print(detail + " ");
+                        }
+                        System.out.println();
+                    } catch (ProductNotFound e) {
+                        System.out.println("Product not found.");
+                    }
+                    break;
+                case 7:
+                    p1.displayascendingorderbyprice();
+                    break;
+                case 8:
+                    p1.displayascendingorderbydiscount();
+                    break;
+                case 9:
+                    System.out.println("Thank you.");
+                    s.close();
+                    return;
+                default:
+                    System.out.println("Invalid option. Please select a valid option.");
+            }
+        }
+    }
+}
